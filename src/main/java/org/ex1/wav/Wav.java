@@ -26,13 +26,14 @@ import org.ex1.results.Spectrum;
 public class Wav {
 
 	Thread thread;
-	JSlider sliderTime;
-	JButton btnPlay;
-	JButton btnStop;
-	JLabel lblTimeZero;
-	JLabel lblTimeCurrent;
-	JLabel lblTimeMax;
-	Clip clip;
+	public JSlider sliderTime;
+	public JButton btnPlay;
+	public JButton btnStop;
+	public JLabel lblTimeZero;
+	public JLabel lblTimeCurrent;
+	public JLabel lblTimeMax;
+	public Clip clip;
+	private ArrayList<Float> allSamples;
 
 	public Wav(JSlider sliderTime, JButton btnPlay, JButton btnStop, JLabel lblTimeZero, JLabel lblTimeCurrent,
 			JLabel lblTimeMax) {
@@ -122,12 +123,14 @@ public class Wav {
 		} catch (Exception e) {
 			System.err.println(e);
 		}
-
 	}
 
-	public void performFFT(String inputFilePath) throws Exception {
+	public FFT performFFT(String inputFilePath, int mode) throws Exception {
 		WaveDecoder decoder = new WaveDecoder(new FileInputStream(inputFilePath));
 		FFT fft = new FFT(Utils.SAMPLE_RATE, Utils.FREQUENCY);
+
+		allSamples = new ArrayList<Float>();
+		int frameSize = 0;
 
 		float[] samples = new float[Utils.SAMPLE_RATE];
 		float[] spectrum = new float[Utils.SAMPLE_RATE / 2 + 1];
@@ -136,10 +139,11 @@ public class Wav {
 
 		Autocorrelation autocorrelation = new Autocorrelation();
 
-//		while (decoder.readSamples(samples) > 0) {
+		while (decoder.readSamples(samples) > 0) {
+			frameSize = samples.length;
 			decoder.readSamples(samples);
+			collectSamples(samples);
 			fft.forward(samples);
-			autocorrelation.getFFTAutocorrelation(samples);
 			System.arraycopy(spectrum, 0, lastSpectrum, 0, spectrum.length);
 			System.arraycopy(fft.getSpectrum(), 0, spectrum, 0, spectrum.length);
 
@@ -147,11 +151,23 @@ public class Wav {
 			for (int i = 0; i < spectrum.length; i++)
 				flux += (spectrum[i] - lastSpectrum[i]);
 			spectralFlux.add(flux);
-//		}
+		}
 
-//		new Spectrum(fft);
-		new org.ex1.results.Autocorrelation(autocorrelation.getResults());
+		
 
+		if (mode != 0) {
+			new Spectrum(fft);
+			autocorrelation.getFFTAutocorrelation(allSamples, frameSize);
+			new org.ex1.results.Autocorrelation(autocorrelation.getResults());
+		}
+
+		return fft;
+	}
+
+	private void collectSamples(float[] samples) {
+		for (int i = 0; i < samples.length; i++) {
+			allSamples.add(samples[i]);
+		}
 	}
 
 }

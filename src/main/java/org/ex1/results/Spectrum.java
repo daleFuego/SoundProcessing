@@ -31,6 +31,7 @@ public class Spectrum extends JFrame {
 		setVisible(true);
 		setSize(640, 480);
 		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private JPanel createChartPanel() {

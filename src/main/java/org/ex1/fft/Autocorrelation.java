@@ -18,6 +18,7 @@ public class Autocorrelation {
         int n = x.length;
         DoubleFFT_1D fft = new DoubleFFT_1D(n);
         fft.realForward(x);
+        
         autocorrelation[0] = sqr(x[0]);
         autocorrelation[1] = sqr(x[1]);
         for (int i = 2; i < n; i += 2) {
@@ -28,19 +29,24 @@ public class Autocorrelation {
         ifft.realInverse(autocorrelation, true);
     }
 
-    public void getFFTAutocorrelation(float[] samples) {
-    	double[] dsamples = new double[samples.length];
-    	autocorrelation = new double[samples.length];
+    public void getFFTAutocorrelation(ArrayList<Float> allSamples, int frameSize) {
+    	int startFrame = 19*frameSize;
     	
-    	for(int i = 0; i < samples.length; i++){
-    		dsamples[i] = samples[i];
+    	double[] dsamples = new double[frameSize];
+    	
+    	autocorrelation = new double[frameSize];
+    	
+    	for(int i = 0; i < frameSize; i++){
+    		dsamples[i] = allSamples.get(startFrame + i);
     	}
+    	
     	
         fftAutoCorrelation(dsamples);
         
         for(int i = 0; i < autocorrelation.length/2; i++){
         	retVal.add(autocorrelation[i]);
         }
+        System.out.println(allSamples.size());
     }
     
     public List<Double> getResults(){

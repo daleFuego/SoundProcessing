@@ -1,17 +1,10 @@
 package org.ex1.app;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class Utils {
 
-	// public static final String FILE_PATH_LOAD =
-	// "C:\\Users\\Magdalena\\Downloads\\test_stereo_44100Hz_16bit_PCM.wav";
-	public static final String FILE_PATH_LOAD = "C:\\Users\\Magdalena\\Desktop\\natural\\viola\\440Hzmiddle.wav";// "C:\\Users\\Magdalena\\Downloads\\test_stereo_44100Hz_16bit_PCM.wav";
+	public static final String FILE_PATH_LOAD = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\Semestr 1\\Sound Processing\\natural\\viola\\440Hz.wav";
 	public static final String FILE_PATH_SAVE = "C:\\Users\\Magdalena\\Downloads\\output.wav";
+	public static final String FILE_PATH_SAVE_SINE = "C:\\Users\\Magdalena\\Downloads\\sine.wav";
 	public static final String APP_TITLE = "SoundProcessing";
 
 	public static final String FFT_CHART_TITLE = "FFT";
@@ -31,7 +24,6 @@ public class Utils {
 	}
 
 	public static int calculatePeaks(float[] matrix) {
-
 		float firstPeak = Float.MIN_VALUE;
 		int sample = 0;
 
@@ -47,8 +39,6 @@ public class Utils {
 		float firstDrop = firstPeak;
 
 		for (int i = sample + 1; i < matrix.length; i++) {
-			System.out.println(i);
-
 			if (matrix[i] < firstPeak) {
 				firstDrop = matrix[i];
 				sample = i;
@@ -68,14 +58,4 @@ public class Utils {
 
 		return sample;
 	}
-
-	public static Double calculatePeaks(List<Double> results) {		
-		Collections.reverse(results);
-		
-		List<Double> peaks = new ArrayList<Double>();
-		
-//		if(/)
-		return null;
-	}
-
 }
