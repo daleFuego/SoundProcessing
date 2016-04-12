@@ -80,8 +80,6 @@ public class MainWindow extends JFrame {
 		btnPlay.setEnabled(true);
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
-		
-//		btnSineWave.doClick();
 
 	}
 

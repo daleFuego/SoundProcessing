@@ -4,10 +4,12 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.ex1.app.Utils;
@@ -27,29 +29,31 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
 @SuppressWarnings("serial")
-public class Autocorrelation extends JFrame  implements ChartMouseListener{
+public class Autocorrelation extends JFrame implements ChartMouseListener{
 
 	List<Double> results = new ArrayList<Double>();
 	private Crosshair xCrosshair;
 	ChartPanel chartPanel;
 	JFreeChart chart;
+	JLabel lblFF;
 	
 	public Autocorrelation(List<Double> results) {
 		super(Utils.APP_TITLE);
 		this.results = results;
 		
 		JPanel chartPanel = createChartPanel();
-		add(chartPanel, BorderLayout.CENTER);
+		add(chartPanel, BorderLayout.NORTH);
+		JPanel resultPanel = new JPanel();
+		lblFF = new JLabel("Frequency = ... Hz");
+		resultPanel.add(lblFF);
+		add(resultPanel, BorderLayout.SOUTH);
 		
 		setVisible(true);
 		setSize(640, 480);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private JPanel createChartPanel() {
-		
-		
 		String chartTitle = Utils.AUC_CHART_DATASET;
 		String xAxisLabel = Utils.AUC_CHART_AXIS_X;
 		String yAxisLabel = Utils.AUC_CHART_AXIS_Y;
@@ -87,6 +91,7 @@ public class Autocorrelation extends JFrame  implements ChartMouseListener{
 	}
 
 	public void chartMouseClicked(ChartMouseEvent event) {		
+		
 	}
 
 	public void chartMouseMoved(ChartMouseEvent event) {
@@ -96,6 +101,10 @@ public class Autocorrelation extends JFrame  implements ChartMouseListener{
 	        ValueAxis xAxis = plot.getDomainAxis();
 	        double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                RectangleEdge.BOTTOM);
-	        this.xCrosshair.setValue(x);		
+	        this.xCrosshair.setValue(x);	
+	        DecimalFormat df = new DecimalFormat();
+	        df.setMaximumFractionDigits(2);
+	        
+	        lblFF.setText("Frequency = " + df.format(Utils.FREQUENCY/xCrosshair.getValue()) + " Hz");
 	}	
 }

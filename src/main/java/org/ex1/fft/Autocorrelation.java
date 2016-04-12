@@ -30,7 +30,7 @@ public class Autocorrelation {
     }
 
     public void getFFTAutocorrelation(ArrayList<Float> allSamples, int frameSize) {
-    	int startFrame = 19*frameSize;
+    	int startFrame = 1*frameSize;
     	
     	double[] dsamples = new double[frameSize];
     	

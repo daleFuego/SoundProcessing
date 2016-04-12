@@ -2,7 +2,8 @@ package org.ex1.app;
 
 public class Utils {
 
-	public static final String FILE_PATH_LOAD = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\Semestr 1\\Sound Processing\\natural\\viola\\440Hz.wav";
+	public static final String FILE_PATH_LOAD = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
+			+ "Semestr 1\\Sound Processing\\Task1\\artificial\\diff\\405Hz.wav";
 	public static final String FILE_PATH_SAVE = "C:\\Users\\Magdalena\\Downloads\\output.wav";
 	public static final String FILE_PATH_SAVE_SINE = "C:\\Users\\Magdalena\\Downloads\\sine.wav";
 	public static final String APP_TITLE = "SoundProcessing";
@@ -17,7 +18,7 @@ public class Utils {
 	public static final String AUC_CHART_AXIS_Y = "Value";
 	public static final String AUC_CHART_DATASET = "Autocorrelation";
 	public static final float FREQUENCY = 44100;
-	public static final int SAMPLE_RATE = 2048;
+	public static final int SAMPLE_RATE = 1024;
 
 	public static float float2dB(float value) {
 		return (float) (Math.log(value) / Math.log(10.0) * 20.0);
@@ -57,5 +58,9 @@ public class Utils {
 		}
 
 		return sample;
+	}
+
+	public static Double float2dB(Double double1) {
+		 return ((Math.log(double1) / Math.log(10.0) * 20.0));
 	}
 }

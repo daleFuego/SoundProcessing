@@ -1,8 +1,6 @@
 package org.ex1.wav;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 /**
@@ -71,10 +69,7 @@ public class WaveDecoder implements Decoder
 
 		if( fmt != 16 )
 			throw new IllegalArgumentException( "Only 16-bit signed format supported" );
-		
-//		if( !in.read4ByteString().equals( "data" ) )
-//			throw new RuntimeException( "expected data tag" );
-				
+	
 		in.readIntLittleEndian();
 	}
 	
@@ -111,14 +106,5 @@ public class WaveDecoder implements Decoder
 		}
 		
 		return readSamples; 
-	}
-	
-	public static void main( String[] args ) throws FileNotFoundException, Exception
-	{
-		WaveDecoder decoder = new WaveDecoder( new FileInputStream( "samples/sample.wav" ) );
-		float[] samples = new float[1024];
-		int readSamples = 0;
-		while( ( readSamples = decoder.readSamples( samples ) ) > 0 )
-			System.out.println( "read " + readSamples + " samples" );
 	}
 }
