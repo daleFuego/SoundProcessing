@@ -157,10 +157,6 @@ public class Wav {
 
 		if (mode != 0) {
 			new Spectrum(fft);
-			for(int i = 0; i < fft.getSpectrum().length; i++){
-				
-				System.out.println(i + " -> " + fft.indexToFreq(i));
-			}
 			autocorrelation.getFFTAutocorrelation(allSamples, frameSize);
 			new org.ex1.results.Autocorrelation(autocorrelation.getResults());
 		}
