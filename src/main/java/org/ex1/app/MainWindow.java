@@ -81,6 +81,7 @@ public class MainWindow extends JFrame {
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
 
+		btnSineWave.doClick();
 	}
 
 	private void initialize() {
@@ -120,9 +121,8 @@ public class MainWindow extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				btnStop.doClick();
-				JFileChooser fileChooser = new JFileChooser();
+				JFileChooser fileChooser = new JFileChooser(Utils.initialLoadPath);
 				fileChooser.setFileFilter(new FileNameExtensionFilter("WAV Files", "wav", "wav"));
-				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 
 				if (fileChooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = fileChooser.getSelectedFile();

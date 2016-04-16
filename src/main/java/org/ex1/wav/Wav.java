@@ -146,13 +146,14 @@ public class Wav {
 			fft.forward(samples);
 			System.arraycopy(spectrum, 0, lastSpectrum, 0, spectrum.length);
 			System.arraycopy(fft.getSpectrum(), 0, spectrum, 0, spectrum.length);
-
+			
 			float flux = 0;
 			for (int i = 0; i < spectrum.length; i++)
 				flux += (spectrum[i] - lastSpectrum[i]);
 			spectralFlux.add(flux);
 		}
-
+		
+		
 		
 
 		if (mode != 0) {

@@ -60,7 +60,7 @@ public class Spectrum extends JFrame implements ChartMouseListener {
 
 		XYDataset dataset = createDataset();
 
-		boolean showLegend = false;
+		boolean showLegend = true;
 		boolean createURL = false;
 		boolean createTooltip = false;
 
@@ -79,10 +79,10 @@ public class Spectrum extends JFrame implements ChartMouseListener {
 
 	private XYDataset createDataset() {
 		XYSeriesCollection dataset = new XYSeriesCollection();
-		XYSeries series = new XYSeries("");
+		XYSeries series = new XYSeries("" + fft.indexToFreq(Utils.calculatePeaks(fft.getSpectrum())));
 
-		for (int i = 0; i < fft.getSpectrum().length; i++) {
-			series.add(fft.indexToFreq(i), Utils.float2dB(fft.getSpectrum()[i]));
+		for (int i = 0; i < fft.getSpectrum().length/4; i++) {
+			series.add(fft.indexToFreq(i), /*Utils.float2dB(*/fft.getSpectrum()[i]);
 		}
 
 		dataset.addSeries(series);
@@ -106,5 +106,7 @@ public class Spectrum extends JFrame implements ChartMouseListener {
         
         lblFF.setText("Frequency = " + df.format((int) xCrosshair.getValue()) + " Hz");
 
+        System.out.println();
+        
 	}
 }
