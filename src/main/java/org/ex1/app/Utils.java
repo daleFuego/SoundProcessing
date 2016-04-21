@@ -3,9 +3,11 @@ package org.ex1.app;
 public class Utils {
 
 	public static final String FILE_PATH_LOAD = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
-			+ "Semestr 1\\Sound Processing\\Task1\\Wavs\\seq\\DWK_violin.wav";//\\artificial\\diff\\405Hz.wav";
-	public static final String FILE_PATH_SAVE = "C:\\Users\\Magdalena\\Downloads\\output.wav";
-	public static final String FILE_PATH_SAVE_SINE = "C:\\Users\\Magdalena\\Downloads\\sine.wav";
+			+ "Semestr 1\\Sound Processing\\Wavs\\seq\\DWK_violin.wav";
+	public static final String FILE_PATH_SAVE = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
+			+ "Semestr 1\\Sound Processing\\Task1\\output.wav";
+	public static final String FILE_PATH_SAVE_SINE = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
+			+ "Semestr 1\\Sound Processing\\Task1\\sine.wav";
 	public static final String APP_TITLE = "SoundProcessing";
 
 	public static final String FFT_CHART_TITLE = "FFT";
