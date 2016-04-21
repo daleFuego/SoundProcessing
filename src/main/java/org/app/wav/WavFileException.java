@@ -1,4 +1,4 @@
-package org.ex1.wav;
+package org.app.wav;
 
 public class WavFileException extends Exception
 {

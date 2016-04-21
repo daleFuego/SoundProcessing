@@ -1,4 +1,4 @@
-package org.ex1.wav;
+package org.app.wav;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import org.ex1.app.Utils;
-import org.ex1.fft.Autocorrelation;
-import org.ex1.fft.FFT;
+import org.app.fft.Autocorrelation;
+import org.app.fft.FFT;
+import org.app.gui.Utils;
 import org.ex1.results.Spectrum;
 
 public class Wav {

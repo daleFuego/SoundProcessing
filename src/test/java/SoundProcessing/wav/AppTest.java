@@ -1,6 +1,6 @@
 package SoundProcessing.wav;
 
-import org.ex1.app.MainWindow;
+import org.app.gui.MainWindow;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

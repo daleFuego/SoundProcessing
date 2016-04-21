@@ -1,4 +1,4 @@
-package org.ex1.wav;
+package org.app.wav;
 
 // Wav file IO class
 // A.Greensted
@@ -12,7 +12,7 @@ package org.ex1.wav;
 
 import java.io.*;
 
-import org.ex1.app.Utils;
+import org.app.gui.Utils;
 
 public class WavFile
 {

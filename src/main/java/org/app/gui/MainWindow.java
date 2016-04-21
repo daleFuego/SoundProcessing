@@ -1,4 +1,4 @@
-package org.ex1.app;
+package org.app.gui;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -20,43 +20,50 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.ex1.sinus.SinusoidWav;
-import org.ex1.wav.Wav;
+import org.app.wav.Wav;
+import org.ex1.results.SinusoidWav;
+import org.ex2.filter.Wind;
+
+import javax.swing.border.TitledBorder;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 
-	JPanel contentPane;
-	JPanel panelFileProcess;
-	JPanel panelControll;
-	JPanel panelFilePath;
-	JTextField textFieldFilePathLoad;
-	JLabel lblFilePathLoad;
-	JLabel lblCurrentlyProcessing;
-	JLabel lblProcessedSongTitle;
-	JButton btnFilePathLoad;
-	JButton btnExit;
-	JButton btnReset;
+	private JPanel contentPane;
+	private JPanel panelFileProcess;
+	private JPanel panelControll;
+	private JPanel panelFilePath;
+	private JTextField textFieldFilePathLoad;
+	private JLabel lblFilePathLoad;
+	private JLabel lblCurrentlyProcessing;
+	private JLabel lblProcessedSongTitle;
+	private JButton btnFilePathLoad;
+	private JButton btnExit;
+	private JButton btnReset;
 	public JButton btnPlay;
-	JButton btnStop;
-	JSlider sliderTime;
+	private JButton btnStop;
+	private JSlider sliderTime;
+	private JLabel lblTimeZero;
+	private JLabel lblTimeCurrent;
+	private JLabel lblTimeMax;
+	private JSlider sliderVolume;
+	private JLabel lblVolume;
+	private JLabel lblVolumeVal;
+	private JTextField textFieldFilePathSave;
+	private JButton btnSave;
+	private JButton btnFft;
+	private JButton btnFilePathSave;
+	private JLabel lblFilePathSave;
+	private JButton btnSineWave;
+	private JButton btnWindFilter;
+	private JLabel lblLoadFilePath;
+	private JLabel lblSaveFilePath;
+
 	Wav wav;
 
 	int prevPosition = 0;
 	int currPosition = 0;
-	JLabel lblTimeZero;
-	JLabel lblTimeCurrent;
-	JLabel lblTimeMax;
-	JSlider sliderVolume;
-	JLabel lblVolume;
-	JLabel lblVolumeVal;
-	JTextField textFieldFilePathSave;
-	JButton btnSave;
-	JButton btnFft;
-	JButton btnFilePathSave;
-	JLabel lblFilePathSave;
-	private JButton btnSineWave;
-
+	
 	public MainWindow() {
 		setTitle(Utils.APP_TITLE);
 		try {
@@ -68,12 +75,12 @@ public class MainWindow extends JFrame {
 		textFieldFilePathLoad.setText(Utils.FILE_PATH_LOAD);
 		textFieldFilePathSave.setText(Utils.FILE_PATH_SAVE);
 		
-		JLabel lblLoadFilePath = new JLabel("Load file path");
-		lblLoadFilePath.setBounds(10, 15, 404, 14);
+		lblLoadFilePath = new JLabel("Load file path:");
+		lblLoadFilePath.setBounds(10, 19, 404, 14);
 		lblLoadFilePath.setVisible(true);
 		panelFilePath.add(lblLoadFilePath);
 		
-		JLabel lblSaveFilePath = new JLabel("Save file path");
+		lblSaveFilePath = new JLabel("Save file path:");
 		lblSaveFilePath.setBounds(7, 73, 412, 14);
 		lblSaveFilePath.setVisible(true);
 		panelFilePath.add(lblSaveFilePath);
@@ -89,7 +96,7 @@ public class MainWindow extends JFrame {
 		lblFilePathLoad.setBounds(10, 44, 43, 14);
 
 		lblCurrentlyProcessing = new JLabel("Currently processing :");
-		lblCurrentlyProcessing.setBounds(10, 11, 404, 14);
+		lblCurrentlyProcessing.setBounds(10, 19, 404, 14);
 
 		lblProcessedSongTitle = new JLabel("");
 		lblProcessedSongTitle.setBounds(144, 11, 270, 14);
@@ -104,10 +111,10 @@ public class MainWindow extends JFrame {
 		lblTimeMax.setBounds(440, 92, 89, 14);
 
 		lblVolume = new JLabel("Volume", SwingConstants.RIGHT);
-		lblVolume.setBounds(199, 39, 63, 14);
+		lblVolume.setBounds(199, 48, 63, 14);
 
 		lblVolumeVal = new JLabel("", SwingConstants.RIGHT);
-		lblVolumeVal.setBounds(498, 39, 31, 14);
+		lblVolumeVal.setBounds(498, 48, 31, 14);
 
 		textFieldFilePathLoad = new JTextField();
 		textFieldFilePathLoad.setBounds(52, 41, 378, 20);
@@ -147,7 +154,7 @@ public class MainWindow extends JFrame {
 		});
 
 		btnExit = new JButton("Exit");
-		btnExit.setBounds(431, 11, 89, 23);
+		btnExit.setBounds(382, 58, 89, 23);
 		btnExit.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -156,7 +163,7 @@ public class MainWindow extends JFrame {
 		});
 
 		btnReset = new JButton("Reset");
-		btnReset.setBounds(327, 11, 89, 23);
+		btnReset.setBounds(225, 58, 89, 23);
 		btnReset.setVisible(true);
 		btnReset.addActionListener(new ActionListener() {
 
@@ -176,7 +183,7 @@ public class MainWindow extends JFrame {
 		});
 
 		btnPlay = new JButton("Play");
-		btnPlay.setBounds(7, 35, 89, 23);
+		btnPlay.setBounds(10, 44, 89, 23);
 		btnPlay.setEnabled(false);
 		btnPlay.addActionListener(new ActionListener() {
 
@@ -188,7 +195,7 @@ public class MainWindow extends JFrame {
 		});
 
 		btnStop = new JButton("Stop");
-		btnStop.setBounds(103, 35, 89, 23);
+		btnStop.setBounds(103, 44, 89, 23);
 		btnStop.setEnabled(false);
 		btnStop.addActionListener(new ActionListener() {
 
@@ -198,10 +205,10 @@ public class MainWindow extends JFrame {
 		});
 
 		sliderTime = new JSlider();
-		sliderTime.setBounds(10, 69, 519, 26);
+		sliderTime.setBounds(10, 80, 519, 26);
 		sliderTime.setValue(0);
 		sliderVolume = new JSlider();
-		sliderVolume.setBounds(272, 33, 229, 26);
+		sliderVolume.setBounds(272, 42, 229, 26);
 		sliderVolume.setValue(100);
 		sliderVolume.addChangeListener(new ChangeListener() {
 
@@ -214,14 +221,16 @@ public class MainWindow extends JFrame {
 		lblVolumeVal.setText("" + sliderVolume.getValue());
 
 		panelFilePath = new JPanel();
-		panelFilePath.setBounds(5, 5, 539, 133);
+		panelFilePath.setBorder(new TitledBorder(null, "Wav Files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelFilePath.setBounds(7, 5, 539, 133);
 		panelFilePath.setLayout(null);
 		panelFilePath.add(lblFilePathLoad);
 		panelFilePath.add(textFieldFilePathLoad);
 		panelFilePath.add(btnFilePathLoad);
 
 		panelFileProcess = new JPanel();
-		panelFileProcess.setBounds(5, 169, 539, 117);
+		panelFileProcess.setBorder(new TitledBorder(null, "Player", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelFileProcess.setBounds(7, 143, 539, 117);
 		panelFileProcess.setLayout(null);
 		panelFileProcess.add(lblProcessedSongTitle);
 		panelFileProcess.add(lblCurrentlyProcessing);
@@ -236,7 +245,8 @@ public class MainWindow extends JFrame {
 		panelFileProcess.add(lblVolumeVal);
 
 		panelControll = new JPanel();
-		panelControll.setBounds(5, 297, 539, 39);
+		panelControll.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelControll.setBounds(7, 265, 539, 92);
 		panelControll.setLayout(null);
 		panelControll.add(btnReset);
 		panelControll.add(btnExit);
@@ -264,7 +274,7 @@ public class MainWindow extends JFrame {
 		contentPane.add(panelControll);
 
 		btnFft = new JButton("FFT");
-		btnFft.setBounds(15, 11, 89, 23);
+		btnFft.setBounds(68, 20, 89, 23);
 		btnFft.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -278,7 +288,7 @@ public class MainWindow extends JFrame {
 		panelControll.add(btnFft);
 
 		btnSave = new JButton("Save");
-		btnSave.setBounds(223, 11, 89, 23);
+		btnSave.setBounds(68, 58, 89, 23);
 		btnSave.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -295,12 +305,21 @@ public class MainWindow extends JFrame {
 				sinusoidWav.play();
 			}
 		});
-		btnSineWave.setBounds(119, 11, 89, 23);
+		btnSineWave.setBounds(225, 20, 89, 23);
 		panelControll.add(btnSineWave);
+		
+		btnWindFilter = new JButton("Wind filter");
+		btnWindFilter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Wind();
+			}
+		});
+		btnWindFilter.setBounds(382, 20, 89, 23);
+		panelControll.add(btnWindFilter);
 
 		setContentPane(contentPane);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 570, 386);
+		setBounds(100, 100, 570, 401);
 		setVisible(true);
 
 		if (textFieldFilePathLoad.getText().length() > 0) {

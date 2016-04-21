@@ -1,4 +1,4 @@
-package org.ex1.wav;
+package org.app.wav;
 
 /**
  * Interface for audio decoders that return successive

@@ -1,4 +1,4 @@
-package org.ex1.fft;
+package org.app.fft;
 
 /*
  *  Copyright (c) 2007 - 2008 by Damien Di Fede <ddf@compartmental.net>
