@@ -81,7 +81,7 @@ public class MainWindow extends JFrame {
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
 
-		btnSineWave.doClick();
+//		btnSineWave.doClick();
 	}
 
 	private void initialize() {
