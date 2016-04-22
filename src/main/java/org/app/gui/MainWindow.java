@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
 
-		btnMelody.doClick();
+		btnWindFilter.doClick();
 	}
 
 	private void initialize() {
