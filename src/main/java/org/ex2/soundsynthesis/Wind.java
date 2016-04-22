@@ -1,7 +1,8 @@
-package org.ex1.results;
+package org.ex2.soundsynthesis;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 
 import javax.swing.JTextField;
 
@@ -11,36 +12,25 @@ import org.app.wav.Wav;
 import org.app.wav.WavFile;
 import org.app.wav.WaveDecoder;
 
-public class SinusoidWav {
+public class Wind {
 
 	private JTextField textFieldFilePathLoad;
 	private JTextField textFieldFilePathSave;
 
 	Wav wav;
 
-	int sampleRate = Utils.FRAME_SIZE;
-	double duration = 5.0;
-
-	public SinusoidWav(Wav wav, JTextField textFieldFilePathLoad, JTextField textFieldFilePathSave) {
+	public Wind(Wav wav, JTextField textFieldFilePathLoad2, JTextField textFieldFilePathSave2) {
 		this.wav = wav;
-		this.textFieldFilePathLoad = textFieldFilePathLoad;
-		this.textFieldFilePathSave = textFieldFilePathSave;
+		this.textFieldFilePathLoad = textFieldFilePathLoad2;
+		this.textFieldFilePathSave = textFieldFilePathSave2;
 	}
 
-	public void generateSineWave() {
-		try {
-			WaveDecoder inputFile1 = new WaveDecoder(new FileInputStream(textFieldFilePathLoad.getText()));
+	public void generateWindEffect() {
+		/*try {
 			float[] samples = new float[Utils.FRAME_SIZE];
-			float[] spectrum = new float[Utils.FRAME_SIZE / 2 + 1];
-			float[] lastSpectrum = new float[Utils.FRAME_SIZE / 2 + 1];
-			long numOfSamples = 0;
-			while (inputFile1.readSamples(samples) > 0) {
-				numOfSamples += samples.length;
-			}
-
-			WavFile outputFile = WavFile.newWavFile(new File(Utils.FILE_PATH_SAVE_SINE), 2, numOfSamples, 16,
+			int duration = 
+			WavFile outputFile = WavFile.newWavFile(new File(Utils.FILE_PATH_SAVE_MELODY), 2, numOfSamples, 16,
 					(long) Utils.SAMPLING_FREQUENCY);
-			FFT fft = new FFT(Utils.FRAME_SIZE, Utils.SAMPLING_FREQUENCY);
 
 			double[][] buffer = new double[2][(int) numOfSamples];
 			int iterator = 0;
@@ -69,12 +59,13 @@ public class SinusoidWav {
 			outputFile.close();
 		} catch (Exception e) {
 			System.err.println(e);
-		}
+		}*/
 	}
 
 	public void play() {
-		textFieldFilePathLoad.setText(Utils.FILE_PATH_SAVE_SINE);
-		textFieldFilePathSave.setText(Utils.FILE_PATH_SAVE_SINE);
-		wav.playSound(Utils.FILE_PATH_SAVE_SINE, 0);
+		textFieldFilePathLoad.setText(Utils.FILE_PATH_SAVE_WIND);
+		textFieldFilePathSave.setText(Utils.FILE_PATH_SAVE_WIND);
+		wav.playSound(Utils.FILE_PATH_SAVE_WIND, 0);
 	}
+
 }

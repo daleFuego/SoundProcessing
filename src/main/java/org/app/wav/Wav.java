@@ -86,12 +86,12 @@ public class Wav {
 				}
 			}
 		});
-
+		
 		thread.start();
 	}
 
 	protected String computeTime(long microsecondPosition) {
-		return new SimpleDateFormat("mm:ss").format(new Date(microsecondPosition / 1000));
+		return new SimpleDateFormat("mm:ss.S").format(new Date(microsecondPosition / 1000));
 	}
 
 	public void changeVolume(int value) {
@@ -127,14 +127,14 @@ public class Wav {
 
 	public FFT performFFT(String inputFilePath, int mode) throws Exception {
 		WaveDecoder decoder = new WaveDecoder(new FileInputStream(inputFilePath));
-		FFT fft = new FFT(Utils.SAMPLE_RATE, Utils.FREQUENCY);
+		FFT fft = new FFT(Utils.FRAME_SIZE, Utils.SAMPLING_FREQUENCY);
 
 		allSamples = new ArrayList<Float>();
 		int frameSize = 0;
 
-		float[] samples = new float[Utils.SAMPLE_RATE];
-		float[] spectrum = new float[Utils.SAMPLE_RATE / 2 + 1];
-		float[] lastSpectrum = new float[Utils.SAMPLE_RATE / 2 + 1];
+		float[] samples = new float[Utils.FRAME_SIZE];
+		float[] spectrum = new float[Utils.FRAME_SIZE / 2 + 1];
+		float[] lastSpectrum = new float[Utils.FRAME_SIZE / 2 + 1];
 		List<Float> spectralFlux = new ArrayList<Float>();
 
 		Autocorrelation autocorrelation = new Autocorrelation();

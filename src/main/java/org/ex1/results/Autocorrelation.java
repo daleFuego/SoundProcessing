@@ -105,6 +105,6 @@ public class Autocorrelation extends JFrame implements ChartMouseListener{
 	        DecimalFormat df = new DecimalFormat();
 	        df.setMaximumFractionDigits(2);
 	        
-	        lblFF.setText("Frequency = " + df.format(Utils.FREQUENCY/xCrosshair.getValue()) + " Hz");
+	        lblFF.setText("Frequency = " + df.format(Utils.SAMPLING_FREQUENCY/xCrosshair.getValue()) + " Hz");
 	}	
 }
