@@ -22,8 +22,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.app.wav.Wav;
 import org.ex1.results.SinusoidWav;
-import org.ex2.soundsynthesis.Melody;
-import org.ex2.soundsynthesis.Wind;
+import org.ex2.results.Melody;
+import org.ex2.results.Wind;
 
 import javax.swing.border.TitledBorder;
 
@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
 
-		btnWindFilter.doClick();
+//		btnWindFilter.doClick();
 	}
 
 	private void initialize() {

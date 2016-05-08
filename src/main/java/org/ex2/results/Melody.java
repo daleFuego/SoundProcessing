@@ -1,4 +1,4 @@
-package org.ex2.soundsynthesis;
+package org.ex2.results;
 
 import java.io.File;
 

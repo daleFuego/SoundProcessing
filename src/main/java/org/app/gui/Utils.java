@@ -20,11 +20,14 @@ public class Utils {
 	public static final String AUC_CHART_AXIS_Y = "Value";
 	public static final String AUC_CHART_DATASET = "Autocorrelation";
 	public static final float SAMPLING_FREQUENCY = 44100;
+	public static double CUT_OFF_FREQUENCY = 0;
+	public static final double RESONANCE_PARAMETER = 5;
 	public static final int FRAME_SIZE = 1024;
 	public static final String FILE_PATH_SAVE_WIND = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
 			+ "Semestr 1\\Sound Processing\\Task2\\wind.wav";
 	public static final String FILE_PATH_SAVE_MELODY = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
 			+ "Semestr 1\\Sound Processing\\Task2\\melody.wav";
+	
 	public static String initialLoadPath = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
 			+ "Semestr 1\\Sound Processing\\Task1\\Wavs";
 
