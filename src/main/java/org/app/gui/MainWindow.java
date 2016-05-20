@@ -65,7 +65,7 @@ public class MainWindow extends JFrame {
 	int prevPosition = 0;
 	int currPosition = 0;
 	private JButton btnMelody;
-	
+
 	public MainWindow() {
 		setTitle(Utils.APP_TITLE);
 		try {
@@ -76,12 +76,12 @@ public class MainWindow extends JFrame {
 
 		textFieldFilePathLoad.setText(Utils.FILE_PATH_LOAD);
 		textFieldFilePathSave.setText(Utils.FILE_PATH_SAVE);
-		
+
 		lblLoadFilePath = new JLabel("Load file path:");
 		lblLoadFilePath.setBounds(10, 19, 404, 14);
 		lblLoadFilePath.setVisible(true);
 		panelFilePath.add(lblLoadFilePath);
-		
+
 		lblSaveFilePath = new JLabel("Save file path:");
 		lblSaveFilePath.setBounds(7, 73, 412, 14);
 		lblSaveFilePath.setVisible(true);
@@ -89,8 +89,6 @@ public class MainWindow extends JFrame {
 		btnPlay.setEnabled(true);
 
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
-
-//		btnWindFilter.doClick();
 	}
 
 	private void initialize() {
@@ -226,7 +224,8 @@ public class MainWindow extends JFrame {
 		lblVolumeVal.setText("" + sliderVolume.getValue());
 
 		panelFilePath = new JPanel();
-		panelFilePath.setBorder(new TitledBorder(null, "Wav Files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelFilePath
+				.setBorder(new TitledBorder(null, "Wav Files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelFilePath.setBounds(7, 5, 539, 133);
 		panelFilePath.setLayout(null);
 		panelFilePath.add(lblFilePathLoad);
@@ -234,7 +233,8 @@ public class MainWindow extends JFrame {
 		panelFilePath.add(btnFilePathLoad);
 
 		panelFileProcess = new JPanel();
-		panelFileProcess.setBorder(new TitledBorder(null, "Player", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelFileProcess
+				.setBorder(new TitledBorder(null, "Player", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelFileProcess.setBounds(7, 143, 539, 117);
 		panelFileProcess.setLayout(null);
 		panelFileProcess.add(lblProcessedSongTitle);
@@ -301,7 +301,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 		panelControll.add(btnSave);
-		
+
 		btnSineWave = new JButton("Sine wave");
 		btnSineWave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -312,18 +312,17 @@ public class MainWindow extends JFrame {
 		});
 		btnSineWave.setBounds(223, 20, 89, 23);
 		panelControll.add(btnSineWave);
-		
+
 		btnWindFilter = new JButton("Wind sound");
 		btnWindFilter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Wind wind = new Wind(wav, textFieldFilePathLoad, textFieldFilePathSave);
 				wind.generateWindEffect();
-				wind.play();
 			}
 		});
 		btnWindFilter.setBounds(327, 20, 89, 23);
 		panelControll.add(btnWindFilter);
-		
+
 		btnMelody = new JButton("Melody");
 		btnMelody.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
