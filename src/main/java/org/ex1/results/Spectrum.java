@@ -10,8 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.ex1.app.Utils;
-import org.ex1.fft.FFT;
+import org.app.fft.FFT;
+import org.app.gui.Utils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -30,12 +30,13 @@ import org.jfree.ui.RectangleEdge;
 @SuppressWarnings("serial")
 public class Spectrum extends JFrame implements ChartMouseListener {
 
+	private JFreeChart chart;
+	private JLabel lblFF;
+	
 	FFT fft;
 	Crosshair xCrosshair;
 	ChartPanel chartPanel;
-	JFreeChart chart;
 	XYSeries series;
-	JLabel lblFF;
 
 	public Spectrum(FFT fft) {
 		super(Utils.APP_TITLE);

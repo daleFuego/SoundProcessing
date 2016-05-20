@@ -1,4 +1,4 @@
-package org.ex1.fft;
+package org.app.fft;
 
 import java.util.ArrayList;
 import java.util.List;

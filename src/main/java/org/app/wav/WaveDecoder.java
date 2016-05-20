@@ -1,4 +1,4 @@
-package org.ex1.wav;
+package org.app.wav;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;

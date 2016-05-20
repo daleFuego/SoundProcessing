@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.ex1.app.Utils;
+import org.app.gui.Utils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -31,11 +31,11 @@ import org.jfree.ui.RectangleEdge;
 @SuppressWarnings("serial")
 public class Autocorrelation extends JFrame implements ChartMouseListener{
 
-	List<Double> results = new ArrayList<Double>();
+	private List<Double> results = new ArrayList<Double>();
 	private Crosshair xCrosshair;
-	ChartPanel chartPanel;
-	JFreeChart chart;
-	JLabel lblFF;
+	private ChartPanel chartPanel;
+	private JFreeChart chart;
+	private JLabel lblFF;
 	
 	public Autocorrelation(List<Double> results) {
 		super(Utils.APP_TITLE);
@@ -105,6 +105,6 @@ public class Autocorrelation extends JFrame implements ChartMouseListener{
 	        DecimalFormat df = new DecimalFormat();
 	        df.setMaximumFractionDigits(2);
 	        
-	        lblFF.setText("Frequency = " + df.format(Utils.FREQUENCY/xCrosshair.getValue()) + " Hz");
+	        lblFF.setText("Frequency = " + df.format(Utils.SAMPLING_FREQUENCY/xCrosshair.getValue()) + " Hz");
 	}	
 }
