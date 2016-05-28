@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import org.app.gui.ProgressDialog;
-import org.app.gui.Utils;
+import org.app.utils.Utils;
 import org.app.wav.BrownNoiseGenerator;
 import org.app.wav.Wav;
 import org.app.wav.WavFile;
@@ -37,9 +37,7 @@ public class Wind {
 	}
 
 	class Task extends SwingWorker<Void, Void> {
-
 		
-
 		@Override
 		public Void doInBackground() {
 			try {

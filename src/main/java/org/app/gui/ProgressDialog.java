@@ -11,6 +11,8 @@ import javax.swing.JRootPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.app.utils.Utils;
+
 @SuppressWarnings("serial")
 public class ProgressDialog extends JFrame {
 

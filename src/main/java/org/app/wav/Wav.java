@@ -20,7 +20,7 @@ import javax.swing.JSlider;
 
 import org.app.fft.Autocorrelation;
 import org.app.fft.FFT;
-import org.app.gui.Utils;
+import org.app.utils.Utils;
 import org.ex1.results.Spectrum;
 
 public class Wav {

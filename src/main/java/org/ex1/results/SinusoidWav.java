@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import javax.swing.JTextField;
 
 import org.app.fft.FFT;
-import org.app.gui.Utils;
+import org.app.utils.Utils;
 import org.app.wav.Wav;
 import org.app.wav.WavFile;
 import org.app.wav.WaveDecoder;

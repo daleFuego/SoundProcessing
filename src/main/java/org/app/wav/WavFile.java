@@ -12,7 +12,7 @@ package org.app.wav;
 
 import java.io.*;
 
-import org.app.gui.Utils;
+import org.app.utils.Utils;
 
 public class WavFile
 {

@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JTextField;
 
-import org.app.gui.Utils;
+import org.app.utils.Utils;
 import org.app.wav.Wav;
 import org.app.wav.WavFile;
 
