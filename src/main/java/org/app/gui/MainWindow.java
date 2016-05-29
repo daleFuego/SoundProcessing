@@ -22,11 +22,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,8 +35,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -52,9 +50,9 @@ import org.app.wav.Wav;
 import org.ex1.results.SinusoidWav;
 import org.ex2.results.Melody;
 import org.ex2.results.Wind;
+import org.ex3.results.Cepstrum;
 import org.ex3.results.DTW;
 import org.ex3.results.DistanceGraph;
-import org.ex3.results.MelCepstrum;
 import org.ex3.results.Recorder;
 
 @SuppressWarnings("serial")
@@ -89,8 +87,6 @@ public class MainWindow extends JFrame {
 	private JLabel lblLoadFilePath;
 	private JLabel lblSaveFilePath;
 	private JButton btnMelody;
-	private JComboBox<String> comboBox;
-	private JTextPane textPaneSRresults;
 	private JLabel lblSaveAsPattern;
 	private JPanel panelRecord;
 	private JButton btnSaveAsPattern;
@@ -98,27 +94,19 @@ public class MainWindow extends JFrame {
 	private JButton btnSRStop;
 	private JButton btnSRPlay;
 	private JButton btnShowDistanceGraph;
-	private JScrollPane scrollPaneSRResults;
 
 	private Wav wav;
 	private Recorder captureThread;
 	private double[] comparedWavVals;
 	private double[][] dividedPoints;
-	private double[][] melCepstrum = null;
+	private double[][] cepstrum;
 	private File comparedWavFile;
 	private JTable tableSRVals;
 	private JScrollPane scrollPaneSRVals;
+	protected String foundPattern;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public MainWindow() {
 		setTitle(Utils.APP_TITLE);
-
-		File folder = new File(Utils.SRPatternsPath);
-		String[] listOfFiles = folder.list();
-		if (listOfFiles.length == 0) {
-			listOfFiles = new String[1];
-			listOfFiles[0] = "empty patterns folder";
-		}
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -139,10 +127,6 @@ public class MainWindow extends JFrame {
 		textFieldFilePathSave.setBackground(Color.WHITE);
 		textFieldFilePathSave.setBounds(52, 97, 464, 20);
 		textFieldFilePathSave.setText(Utils.FILE_PATH_SAVE);
-
-		textPaneSRresults = new JTextPane();
-		textPaneSRresults.setEnabled(false);
-		textPaneSRresults.setEditable(false);
 
 		// SLIDERS
 		sliderTime = new JSlider();
@@ -197,13 +181,9 @@ public class MainWindow extends JFrame {
 		lblVolume.setBounds(235, 39, 30, 30);
 		lblVolume.setIcon(getScaledImage(Utils.ICON_VOLUME, 30, 30));
 
-		// COMBOBOX
-		comboBox = new JComboBox(listOfFiles);
-		comboBox.setBounds(172, 181, 24, 23);
-		comboBox.setVisible(false);
-
 		// TABLE
 		tableSRVals = new JTable();
+		tableSRVals.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tableSRVals.setModel(
 				new DefaultTableModel(new Object[][] { { null, null }, }, new String[] { "Value", "Pattern" }));
 
@@ -221,7 +201,7 @@ public class MainWindow extends JFrame {
 					btnStart.setEnabled(true);
 					btnSRStop.setEnabled(false);
 
-					findBest();
+					recognizeSpeech();
 				}
 			}
 		});
@@ -238,51 +218,51 @@ public class MainWindow extends JFrame {
 		btnSRPlay.setEnabled(false);
 
 		btnSaveAsPattern = new JButton("Save as pattern");
-		btnSaveAsPattern.setBounds(10, 56, 109, 23);
+		btnSaveAsPattern.setBounds(11, 48, 109, 23);
 		btnSaveAsPattern.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				melCepstrum();
-				String surfix = "(" + 0 + ")";
+				makeCepstrumTransformation();
+
 				try {
+					String fileRegex = "Pattern " + 0;
 					String fileName = Utils.SRPatternsPath + Utils.FILE_SEPARATOR;
-					int index = 0;
-					while (new File(fileName + surfix).isFile()) {
-						index++;
-						surfix = "(" + index + ")";
+					int fileIndex = 0;
+					while (new File(fileName + fileRegex).isFile()) {
+						fileIndex++;
+						fileRegex = "Pattern " + fileIndex;
 					}
-					fileName += surfix;
-					File statText = new File(fileName);
-					FileOutputStream is = new FileOutputStream(statText);
-					OutputStreamWriter osw = new OutputStreamWriter(is);
-					Writer w = new BufferedWriter(osw);
-					for (int i = 0; i < melCepstrum.length - 1; i++) {
+					fileName += fileRegex;
+					Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fileName))));
+					for (int i = 0; i < cepstrum.length - 1; i++) {
 						String temp = "";
-						for (int j = 0; j < melCepstrum[i].length; j++) {
-							temp += melCepstrum[i][j];
-							if (j != melCepstrum[i].length - 1)
+						for (int j = 0; j < cepstrum[i].length; j++) {
+							temp += cepstrum[i][j];
+							if (j != cepstrum[i].length - 1)
 								temp += ',';
 						}
-						w.write(temp + '\n');
+						writer.write(temp + '\n');
 					}
-					w.close();
-				} catch (IOException e1) {
-					System.err.println("error");
-				}
+					writer.close();
 
-				comboBox.addItem(surfix);
-				lblSaveAsPattern.setText("Done");
-				(new Thread() {
-					public void run() {
-						try {
-							sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+					foundPattern = fileRegex;
+//					comboBox.addItem(fileRegex);
+					lblSaveAsPattern.setText("Done");
+					
+					(new Thread() {
+						public void run() {
+							try {
+								sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							lblSaveAsPattern.setText("");
 						}
-						lblSaveAsPattern.setText("");
-					}
-				}).start();
+					}).start();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 		});
 
@@ -449,33 +429,24 @@ public class MainWindow extends JFrame {
 		});
 		btnMelody.setBounds(149, 20, 109, 23);
 
-		btnShowDistanceGraph = new JButton("Print graphs");
+		btnShowDistanceGraph = new JButton("Show graphs");
 		btnShowDistanceGraph.setBounds(10, 323, 109, 23);
 		btnShowDistanceGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame jframe = new JFrame("Graph");
-
-				String t = Utils.SRPatternsPath + Utils.FILE_SEPARATOR + comboBox.getSelectedItem();
-				String s = Utils.initialLoadSPPath + Utils.FILE_SEPARATOR + "current_trace.csv";
-				DTW dtw = new DTW(t, s);
+				JFrame graphFrame = new JFrame("Graph");
+				System.out.println(foundPattern);
+				DTW dtw = new DTW(Utils.SRPatternsPath + Utils.FILE_SEPARATOR + foundPattern,
+						Utils.FILE_PATH_SR_STATS);
 				dtw.calculateG();
 				dtw.plotGraph();
-				DistanceGraph distanceGraph = new DistanceGraph(dtw);
-
-				jframe.getContentPane().add(distanceGraph);
-				jframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				jframe.pack();
-				jframe.setVisible(true);
+				graphFrame.getContentPane().add(new DistanceGraph(dtw));
+				graphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				graphFrame.pack();
+				graphFrame.setVisible(true);
 			}
 		});
-
-		// SCROLLPANE
-		scrollPaneSRResults = new JScrollPane();
-		scrollPaneSRResults.setBounds(10, 199, 152, 117);
-		scrollPaneSRResults.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPaneSRResults.setViewportView(textPaneSRresults);
 		scrollPaneSRVals = new JScrollPane();
-		scrollPaneSRVals.setBounds(10, 82, 109, 106);
+		scrollPaneSRVals.setBounds(10, 90, 152, 230);
 		scrollPaneSRVals.setViewportView(tableSRVals);
 
 		// PANEL
@@ -529,10 +500,8 @@ public class MainWindow extends JFrame {
 		panelRecord.add(btnSRStop);
 		panelRecord.add(btnStart);
 		panelRecord.add(lblSaveAsPattern);
-		panelRecord.add(scrollPaneSRResults);
 		panelRecord.add(btnShowDistanceGraph);
 		panelRecord.add(scrollPaneSRVals);
-		panelRecord.add(comboBox);
 
 		// CONTENT PANE
 		contentPane = new JPanel();
@@ -555,7 +524,6 @@ public class MainWindow extends JFrame {
 		if (textFieldFilePathLoad.getText().length() > 0) {
 			btnPlay.setEnabled(true);
 		}
-
 	}
 
 	private ImageIcon getScaledImage(String srcImg, int w, int h) {
@@ -595,44 +563,38 @@ public class MainWindow extends JFrame {
 		return sortedMap;
 	}
 
-	public void melCepstrum() {
-		this.comparedWavFile = new File(Utils.initialLoadSPPath + Utils.FILE_SEPARATOR + "temp.wav");
-		this.comparedWavVals = Utils.wavToDoubleArray(comparedWavVals, comparedWavFile);
-		this.dividedPoints = Utils.sampleSignalArray(comparedWavVals);
-		MelCepstrum m = new MelCepstrum(dividedPoints);
-
+	public void makeCepstrumTransformation() {
 		try {
-			melCepstrum = m.getMelCepstrum();
-			File statText = new File(Utils.initialLoadSPPath + Utils.FILE_SEPARATOR + "current_trace.csv");
-			FileOutputStream is = new FileOutputStream(statText);
-			OutputStreamWriter osw = new OutputStreamWriter(is);
-			Writer w = new BufferedWriter(osw);
-			for (int i = 0; i < melCepstrum.length - 1; i++) {
+			cepstrum = new Cepstrum(comparedWavFile, comparedWavVals, dividedPoints).makeCepstrum();
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+					new FileOutputStream(new File(Utils.FILE_PATH_SR_STATS)));
+			Writer writer = new BufferedWriter(outputStreamWriter);
+			for (int i = 0; i < cepstrum.length - 1; i++) {
 				String temp = "";
-				for (int j = 0; j < melCepstrum[i].length; j++) {
-					temp += melCepstrum[i][j];
-					if (j != melCepstrum[i].length - 1)
+				for (int j = 0; j < cepstrum[i].length; j++) {
+					temp += cepstrum[i][j];
+					if (j != cepstrum[i].length - 1) {
 						temp += ',';
+					}
 				}
-				w.write(temp + '\n');
+				writer.write(temp + '\n');
 			}
-			w.close();
+			writer.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void findBest() {
-		melCepstrum();
+	public void recognizeSpeech() {
+		makeCepstrumTransformation();
 
-		File folder = new File(Utils.SRPatternsPath);
-		File[] listOfFiles = folder.listFiles();
-		String s = Utils.initialLoadSPPath + Utils.FILE_SEPARATOR + "current_trace.csv";
-		double minimal = 999999;
+		File[] listOfFiles = new File(Utils.SRPatternsPath).listFiles();
+		double minimal = Integer.MAX_VALUE;
 		HashMap<String, Double> map = new HashMap<>();
 		for (File file : listOfFiles) {
 			if (file.isFile()) {
-				String t = Utils.SRPatternsPath + Utils.FILE_SEPARATOR + file.getName();
-				DTW dtw = new DTW(t, s);
+				DTW dtw = new DTW(Utils.SRPatternsPath + Utils.FILE_SEPARATOR + file.getName(),
+						Utils.FILE_PATH_SR_STATS);
 				dtw.calculateG();
 				if (minimal > dtw.minimalPath) {
 					minimal = dtw.minimalPath;
@@ -640,8 +602,26 @@ public class MainWindow extends JFrame {
 				map.put(file.getName(), dtw.minimalPath);
 			}
 		}
-		Map<String, Double> sorted_map = sortByValues(map);
-		String tmp = sorted_map.toString();
-		textPaneSRresults.setText(tmp.substring(1, tmp.length() - 1));
+		presentResultsInTable(sortByValues(map));
+	}
+
+	private void presentResultsInTable(Map<String, Double> sortedByValues) {
+		try {
+			((DefaultTableModel) tableSRVals.getModel()).getDataVector().removeAllElements();
+			tableSRVals.repaint();
+			int i = 0;
+			for (String fileName : sortedByValues.keySet()) {
+				if(i == 0){
+					foundPattern = fileName;
+				}
+				i++;
+				Vector<Object> data = new Vector<Object>();
+				data.add(fileName);
+				data.add(sortedByValues.get(fileName));
+				((DefaultTableModel) tableSRVals.getModel()).addRow(data);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

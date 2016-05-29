@@ -19,6 +19,8 @@ public class Utils {
 			+ "Semestr 1\\Sound Processing\\Task1\\output.wav";
 	public static final String FILE_PATH_SAVE_SINE = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
 			+ "Semestr 1\\Sound Processing\\Task1\\sine.wav";
+	public static final String FILE_PATH_SR_STATS = "C:\\Users\\Magdalena\\Documents\\Szkoła\\Computer Science and Information Technology\\"
+			+ "Semestr 1\\Sound Processing\\Task3\\Wavs\\statFile.csv";
 	public static final String APP_TITLE = "SoundProcessing";
 
 	public static final String FFT_CHART_TITLE = "FFT";
