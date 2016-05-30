@@ -83,7 +83,7 @@ public class Spectrum extends JFrame implements ChartMouseListener {
 		XYSeries series = new XYSeries("" + fft.indexToFreq(Utils.calculatePeaks(fft.getSpectrum())));
 
 		for (int i = 0; i < fft.getSpectrum().length/4; i++) {
-			series.add(fft.indexToFreq(i), /*Utils.float2dB(*/fft.getSpectrum()[i]);
+			series.add(fft.indexToFreq(i), fft.getSpectrum()[i]);
 		}
 
 		dataset.addSeries(series);

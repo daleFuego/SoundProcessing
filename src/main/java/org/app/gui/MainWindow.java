@@ -14,15 +14,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.ImageIcon;
@@ -50,10 +41,9 @@ import org.app.wav.Wav;
 import org.ex1.results.SinusoidWav;
 import org.ex2.results.Melody;
 import org.ex2.results.Wind;
-import org.ex3.results.Cepstrum;
 import org.ex3.results.DTW;
-import org.ex3.results.DistanceGraph;
 import org.ex3.results.Recorder;
+import org.ex3.results.SpeechRecognition;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -97,8 +87,9 @@ public class MainWindow extends JFrame {
 
 	private Wav wav;
 	private Recorder captureThread;
+	private SpeechRecognition speechRecognition;
 	private double[] comparedWavVals;
-	private double[][] dividedPoints;
+	private double[][] convertedWav;
 	private double[][] cepstrum;
 	private File comparedWavFile;
 	private JTable tableSRVals;
@@ -201,7 +192,8 @@ public class MainWindow extends JFrame {
 					btnStart.setEnabled(true);
 					btnSRStop.setEnabled(false);
 
-					recognizeSpeech();
+					speechRecognition.recognizeSpeech();
+					foundPattern = speechRecognition.presentResultsInTable(tableSRVals);
 				}
 			}
 		});
@@ -211,7 +203,6 @@ public class MainWindow extends JFrame {
 		btnSRPlay.setBounds(90, 15, 30, 30);
 		btnSRPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				Player.play(new File(Utils.initialLoadSPPath + Utils.FILE_SEPARATOR + "temp.wav"));
 			}
 		});
@@ -223,9 +214,9 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				makeCepstrumTransformation();
-
 				try {
+					cepstrum = speechRecognition.makeCepstrumTransformation();
+
 					String fileRegex = "Pattern " + 0;
 					String fileName = Utils.SRPatternsPath + Utils.FILE_SEPARATOR;
 					int fileIndex = 0;
@@ -234,7 +225,8 @@ public class MainWindow extends JFrame {
 						fileRegex = "Pattern " + fileIndex;
 					}
 					fileName += fileRegex;
-					Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fileName))));
+					Writer writer = new BufferedWriter(
+							new OutputStreamWriter(new FileOutputStream(new File(fileName))));
 					for (int i = 0; i < cepstrum.length - 1; i++) {
 						String temp = "";
 						for (int j = 0; j < cepstrum[i].length; j++) {
@@ -247,9 +239,8 @@ public class MainWindow extends JFrame {
 					writer.close();
 
 					foundPattern = fileRegex;
-//					comboBox.addItem(fileRegex);
 					lblSaveAsPattern.setText("Done");
-					
+
 					(new Thread() {
 						public void run() {
 							try {
@@ -433,16 +424,9 @@ public class MainWindow extends JFrame {
 		btnShowDistanceGraph.setBounds(10, 323, 109, 23);
 		btnShowDistanceGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame graphFrame = new JFrame("Graph");
-				System.out.println(foundPattern);
-				DTW dtw = new DTW(Utils.SRPatternsPath + Utils.FILE_SEPARATOR + foundPattern,
-						Utils.FILE_PATH_SR_STATS);
-				dtw.calculateG();
+				DTW dtw = new DTW(Utils.SRPatternsPath + Utils.FILE_SEPARATOR + foundPattern, Utils.FILE_PATH_SR_STATS);
+				dtw.computeMatrixGValues();
 				dtw.plotGraph();
-				graphFrame.getContentPane().add(new DistanceGraph(dtw));
-				graphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				graphFrame.pack();
-				graphFrame.setVisible(true);
 			}
 		});
 		scrollPaneSRVals = new JScrollPane();
@@ -520,6 +504,7 @@ public class MainWindow extends JFrame {
 
 		// OTHERS
 		wav = new Wav(sliderTime, btnPlay, btnStop, lblTimeZero, lblTimeCurrent, lblTimeMax);
+		speechRecognition = new SpeechRecognition(cepstrum, comparedWavFile, comparedWavVals, convertedWav);
 
 		if (textFieldFilePathLoad.getText().length() > 0) {
 			btnPlay.setEnabled(true);
@@ -539,89 +524,5 @@ public class MainWindow extends JFrame {
 		ImageIcon imageIcon = new ImageIcon(resizedImg);
 
 		return imageIcon;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <K extends Comparable, V extends Comparable> Map<K, V> sortByValues(Map<K, V> map) {
-		List<Map.Entry<K, V>> entries = new LinkedList<Map.Entry<K, V>>(map.entrySet());
-
-		Collections.sort(entries, new Comparator<Map.Entry<K, V>>() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public int compare(Entry<K, V> o1, Entry<K, V> o2) {
-				return o1.getValue().compareTo(o2.getValue());
-			}
-		});
-
-		Map<K, V> sortedMap = new LinkedHashMap<K, V>();
-
-		for (Map.Entry<K, V> entry : entries) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
-	}
-
-	public void makeCepstrumTransformation() {
-		try {
-			cepstrum = new Cepstrum(comparedWavFile, comparedWavVals, dividedPoints).makeCepstrum();
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
-					new FileOutputStream(new File(Utils.FILE_PATH_SR_STATS)));
-			Writer writer = new BufferedWriter(outputStreamWriter);
-			for (int i = 0; i < cepstrum.length - 1; i++) {
-				String temp = "";
-				for (int j = 0; j < cepstrum[i].length; j++) {
-					temp += cepstrum[i][j];
-					if (j != cepstrum[i].length - 1) {
-						temp += ',';
-					}
-				}
-				writer.write(temp + '\n');
-			}
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void recognizeSpeech() {
-		makeCepstrumTransformation();
-
-		File[] listOfFiles = new File(Utils.SRPatternsPath).listFiles();
-		double minimal = Integer.MAX_VALUE;
-		HashMap<String, Double> map = new HashMap<>();
-		for (File file : listOfFiles) {
-			if (file.isFile()) {
-				DTW dtw = new DTW(Utils.SRPatternsPath + Utils.FILE_SEPARATOR + file.getName(),
-						Utils.FILE_PATH_SR_STATS);
-				dtw.calculateG();
-				if (minimal > dtw.minimalPath) {
-					minimal = dtw.minimalPath;
-				}
-				map.put(file.getName(), dtw.minimalPath);
-			}
-		}
-		presentResultsInTable(sortByValues(map));
-	}
-
-	private void presentResultsInTable(Map<String, Double> sortedByValues) {
-		try {
-			((DefaultTableModel) tableSRVals.getModel()).getDataVector().removeAllElements();
-			tableSRVals.repaint();
-			int i = 0;
-			for (String fileName : sortedByValues.keySet()) {
-				if(i == 0){
-					foundPattern = fileName;
-				}
-				i++;
-				Vector<Object> data = new Vector<Object>();
-				data.add(fileName);
-				data.add(sortedByValues.get(fileName));
-				((DefaultTableModel) tableSRVals.getModel()).addRow(data);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 }

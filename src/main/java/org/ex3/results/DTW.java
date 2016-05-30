@@ -1,6 +1,5 @@
 package org.ex3.results;
 
-import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -16,30 +15,29 @@ public class DTW {
 
 	private ArrayList<Integer> x;
 	private ArrayList<Integer> y;
-	private double[][] g;
-	private double[][] t;
-	private double[][] s;
+	private double[][] matrixG;
+	private double[][] patternFile;
+	private double[][] currentFile;
 
-	public double minimalPath = 0;
-	public double minimalPath2 = 0;
+	private double minimalPath = 0;
+	public double currShortestDistance = 0;
 
-	public DTW(String tFile, String sFile) {
+	public DTW(String patternFile, String currentFile) {
 		super();
-		this.t = fromFile(tFile);
-		this.s = fromFile(sFile);
-		this.g = new double[t.length][s.length];
-		intialG();
+		this.patternFile = readValsFromPatternFile(patternFile);
+		this.currentFile = readValsFromPatternFile(currentFile);
+		this.matrixG = new double[this.patternFile.length][this.currentFile.length];
+		fillMatrixG();
 	}
 
-	private void intialG() {
-		g[0][0] = 0;
+	private void fillMatrixG() {
+		matrixG[0][0] = 0;
 
-		for (int i = 1; i < t.length; i++) {
-			g[i][0] = Double.POSITIVE_INFINITY;
+		for (int i = 1; i < patternFile.length; i++) {
+			matrixG[i][0] = Double.POSITIVE_INFINITY;
 		}
-
-		for (int j = 1; j < s.length; j++) {
-			g[0][j] = Double.POSITIVE_INFINITY;
+		for (int i = 1; i < currentFile.length; i++) {
+			matrixG[0][i] = Double.POSITIVE_INFINITY;
 		}
 	}
 
@@ -58,84 +56,71 @@ public class DTW {
 			if (values[i] < min)
 				min = values[i];
 		}
+
 		return min;
 	}
 
-	public double[][] calculateG() {
-		for (int j = 1; j < t.length; j++) {
-			for (int i = 1; i < s.length; i++) {
-				g[j][i] = euclideanDistance(t[j], s[i]) + min(g[j][i - 1], g[j - 1][i - 1], g[j - 1][i]);
+	public double[][] computeMatrixGValues() {
+		for (int j = 1; j < patternFile.length; j++) {
+			for (int i = 1; i < currentFile.length; i++) {
+				if (!itakuraConstraint(i, j, currentFile.length, patternFile.length)) {
+					matrixG[j][i] = Double.POSITIVE_INFINITY;
+					continue;
+				}
+				matrixG[j][i] = euclideanDistance(patternFile[j], currentFile[i])
+						+ min(matrixG[j][i - 1], matrixG[j - 1][i - 1], matrixG[j - 1][i]);
 			}
 		}
 
-		setPrecision(2);
+		findShortestDistance();
 
-		this.minimalPath = g[t.length - 1][s.length - 1];
-		this.minimalPath = minimalPath / (t.length + s.length);
-		bestPath();
-		return g;
-	}
-
-	public void setPrecision(int afterDot) {
-		int factor = (int) Math.pow(10d, (double) afterDot);
-		for (int i = 1; i < t.length; i++) {
-			for (int j = 1; j < s.length; j++) {
-				if (g[i][j] != Double.POSITIVE_INFINITY)
-					g[i][j] = Math.round(g[i][j] * factor) / (double) factor;
-			}
-		}
+		return matrixG;
 	}
 
 	public void plotGraph() {
-		bestPath();
-		Plot2DPanel plot = new Plot2DPanel();
-		plot.addLinePlot("The warping function", arrayListToDouble2(x), arrayListToDouble2(y));
+		findShortestDistance();
+		
+		Plot2DPanel plot2dPanel = new Plot2DPanel();
+		plot2dPanel.addLinePlot("", arrayListToDouble2(x), arrayListToDouble2(y));
+		JFrame frameWrappingFunction = new JFrame("WRAPPING FUNCTION");
+		frameWrappingFunction.setContentPane(plot2dPanel);
+		frameWrappingFunction.setBounds(400, 400, 800, 600);
+		frameWrappingFunction.setVisible(true);
 
-		double[] xt = new double[t.length * t[0].length];
-		double[] xs = new double[s.length * s[0].length];
+		double[] xt = new double[patternFile.length * patternFile[0].length];
+		double[] xs = new double[currentFile.length * currentFile[0].length];
 
-		for (int i = 0; i < s.length; i++)
-			for (int j = 0; j < s[i].length; j++)
-				xs[i * s[i].length + j] = i * s[i].length + j;
+		for (int i = 0; i < currentFile.length; i++)
+			for (int j = 0; j < currentFile[i].length; j++)
+				xs[i * currentFile[i].length + j] = i * currentFile[i].length + j;
 
-		for (int i = 0; i < t.length; i++)
-			for (int j = 0; j < t[i].length; j++)
-				xt[i * t[i].length + j] = i * t[i].length + j;
+		for (int i = 0; i < patternFile.length; i++)
+			for (int j = 0; j < patternFile[i].length; j++)
+				xt[i * patternFile[i].length + j] = i * patternFile[i].length + j;
 
-		Plot2DPanel plotS = new Plot2DPanel();
-		plotS.addLinePlot("Model signal", xt, twoDtoOneD(t));
-		Plot2DPanel plotT = new Plot2DPanel();
-		plotT.addLinePlot("analyzed signal", xs, twoDtoOneD(s));
-
-		JFrame frame = new JFrame("The warping function plot");
-		frame.setContentPane(plot);
-		frame.setSize(new Dimension(800, 600));
-		frame.setVisible(true);
-
-		JFrame frameS = new JFrame("Analyzed signal plot");
-		frameS.setContentPane(plotS);
-		frameS.setBounds(400, 400, 800, 600);
-		frameS.setVisible(true);
-
-		JFrame frameT = new JFrame("Model signal plpot");
-		frameT.setContentPane(plotT);
-		frameT.setBounds(800, 0, 800, 600);
-		frameT.setVisible(true);
+		Plot2DPanel currSignalPlot = new Plot2DPanel();
+		currSignalPlot.addLinePlot("PATTERN", xt, twoDtoOneD(patternFile));
+		currSignalPlot.addLinePlot("RECORD", xs, twoDtoOneD(currentFile));
+		currSignalPlot.setLegendOrientation("EAST");
+		currSignalPlot.setAxisLabel(0, "Frequency [Hz]");
+		currSignalPlot.setAxisLabel(1, "Value");
+		currSignalPlot.plotLegend.setVisible(true);
+		JFrame frameCurrSignalPlot = new JFrame("SPEECH RECOGNITION");
+		frameCurrSignalPlot.setContentPane(currSignalPlot);
+		frameCurrSignalPlot.setBounds(400, 400, 800, 600);
+		frameCurrSignalPlot.setVisible(true);
 	}
 
-	private double[][] fromFile(String file) {
+	private double[][] readValsFromPatternFile(String file) {
 		ArrayList<Double[]> array = new ArrayList<>();
 
-		FileInputStream fstream;
 		try {
-			fstream = new FileInputStream(file);
-
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
 
 			String strLine;
 
-			while ((strLine = br.readLine()) != null) {
+			while ((strLine = bufferedReader.readLine()) != null) {
 				String[] row = strLine.split(",");
 
 				if (row.length > 1)
@@ -144,7 +129,7 @@ public class DTW {
 					array.add(new Double[] { Double.parseDouble(strLine) });
 			}
 
-			in.close();
+			dataInputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -152,13 +137,25 @@ public class DTW {
 		return arrayListToDouble(array);
 	}
 
-	public void bestPath() {
+	private boolean itakuraConstraint(int i, int j, int I, int J) {
+		int a = 2 * (i - I) + J;
+		int b = (int) (0.5 * (i - 1) + 1);
+		int c = 2 * (i - 1) + 1;
+		int d = (int) (0.5 * (i - I) + J);
+
+		return j >= a && j >= b && j <= c && j <= d;
+	}
+
+	public void findShortestDistance() {
+		int j = matrixG.length;
+		int i = matrixG[0].length;
+		double sum = 0d;
+
 		this.x = new ArrayList<>();
 		this.y = new ArrayList<>();
+		this.setMinimalPath(matrixG[patternFile.length - 1][currentFile.length - 1]
+				/ (patternFile.length + currentFile.length));
 
-		int j = g.length;
-		int i = g[0].length;
-		double sum = 0d;
 		try {
 			x.add(i);
 			y.add(j);
@@ -166,48 +163,51 @@ public class DTW {
 			i--;
 
 			while ((j >= 0) && (i >= 0)) {
-				final double diagCost;
-				final double leftCost;
-				final double upCost;
+				final double diagonal;
+				final double left;
+				final double top;
 
-				if ((j > 0) && (i > 0))
+				if ((j > 0) && (i > 0)) {
+					diagonal = matrixG[j - 1][i - 1];
+				} else {
+					diagonal = Double.POSITIVE_INFINITY;
+				}
 
-					diagCost = g[j - 1][i - 1];
-				else
-					diagCost = Double.POSITIVE_INFINITY;
+				if (j > 0) {
+					top = matrixG[j - 1][i];
+				} else {
+					top = Double.POSITIVE_INFINITY;
+				}
 
-				if (j > 0)
-					upCost = g[j - 1][i];
-				else
-					upCost = Double.POSITIVE_INFINITY;
+				if (i > 0) {
+					left = matrixG[j][i - 1];
+				} else {
+					left = Double.POSITIVE_INFINITY;
+				}
 
-				if (i > 0)
-					leftCost = g[j][i - 1];
-				else
-					leftCost = Double.POSITIVE_INFINITY;
-
-				if ((diagCost <= leftCost) && (diagCost <= upCost)) {
+				if ((diagonal <= left) && (diagonal <= top)) {
 					j--;
 					i--;
-				} else if ((leftCost < diagCost) && (leftCost < upCost))
+				} else if ((left < diagonal) && (left < top)) {
 					i--;
-				else if ((upCost < diagCost) && (upCost < leftCost))
+				} else if ((top < diagonal) && (top < left)) {
 					j--;
-				else
+				} else {
 					i--;
+				}
 
 				x.add(i);
 				y.add(j);
 
 				if (i >= 0 && j >= 0) {
-					sum += g[j][i];
+					sum += matrixG[j][i];
 				}
 			}
-		} catch (ArrayIndexOutOfBoundsException a) {
-			System.out.println("j: " + j + " i: " + i);
-			a.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		minimalPath2 = sum / (t.length + s.length);
+
+		currShortestDistance = sum / (patternFile.length + currentFile.length);
 	}
 
 	public static double[][] arrayListToDouble(ArrayList<Double[]> array) {
@@ -266,6 +266,14 @@ public class DTW {
 	}
 
 	public double[][] getG() {
-		return g;
+		return matrixG;
+	}
+
+	public double getMinimalPath() {
+		return minimalPath;
+	}
+
+	public void setMinimalPath(double minimalPath) {
+		this.minimalPath = minimalPath;
 	}
 }
